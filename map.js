@@ -426,7 +426,7 @@ function initMap() {
   // Load GeoJSON that contains zip code boundaries and geographic information
   // NOTE: This uses cross-domain XHR, and may not work on older browsers.
   //map.data.loadGeoJson('https://raw.githubusercontent.com/nholmber/google-maps-statistics/master/map_data_reduced.json')
-  map.data.loadGeoJson("file://./map_data_reduced.json")
+  map.data.loadGeoJson("https://raw.githubusercontent.com/dbenitez83/LetMeHelp/main/map_data_reduced.json")
   //map.data.addGeoJson("/map_data_reduced.json")
   
   // Colorize zip code areas based on relative median danger
