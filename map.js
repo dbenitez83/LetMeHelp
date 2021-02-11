@@ -474,7 +474,7 @@ function initMap() {
     var zip = event.feature.getProperty('zip');
     var risk = event.feature.getProperty('risk');
     var riskRelative = event.feature.getProperty('risk_relative');
-    var population = event.feature.getProperty('pop2018');
+    var population = event.feature.getProperty('pop2020');
     var populationDensity = event.feature.getProperty('pop_density');
 
     // Create content for info window

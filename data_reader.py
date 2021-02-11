@@ -4,41 +4,26 @@ import matplotlib
 from pandas import Series
 import numpy as np
 import os
+from cargador_datos_csv import *
 
-def pop_density_binning(return_colors=False):
-	"""Return bins and color scheme for population density"""
-	bins = np.array([0, 1, 2, 4, 6, 8, 10, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 5000, 10000])
-	cmap = plt.cm.get_cmap("Reds", len(bins)+1)
-	if not return_colors:
-		return bins, cmap
-	else:
-		colors = []
-		for i in range(cmap.N):
-			rgb = cmap(i)[:3] 
-			colors.append(matplotlib.colors.rgb2hex(rgb))
-
-		return bins, colors
-
-def risk_binning(return_colors=False):
-	"""Return bins and color scheme for relative median risk"""
-	bins = np.arange(-10000,18000,2000)
-	cmap = plt.cm.get_cmap("RdBu", len(bins))
-	if not return_colors:
-		return bins, cmap
-	else:
-		colors = []
-		for i in range(cmap.N):
-			rgb = cmap(i)[:3] 
-			colors.append(matplotlib.colors.rgb2hex(rgb))
-
-		return bins, colors
-		
-url="/Volumes/Disco Externo/municipios_ign.geojson"
-keep_columns = ["nameunit", "codigoine", "geometry"]
-df=gpd.read_file(url)
-
-df=df.loc[(df["codigoine"].isin(["25041","25068","25048","25052","25068","25093","25099","25113", 
-	"25122","25135","25137","25158","25168","25205","25230","25248","25252","25006",\
+municipiosLetMeHelp=["25041",\
+"25068",\
+"25048",\
+"25052",\
+"25068",\
+"25093",\
+"25099",\
+"25113",\
+"25122",\
+"25135",\
+"25137",\
+"25158",\
+"25168",\
+"25205",\
+"25230",\
+"25248",\
+"25252",\
+"25006",\
 "25009",\
 "25029",\
 "25170",\
@@ -146,7 +131,41 @@ df=df.loc[(df["codigoine"].isin(["25041","25068","25048","25052","25068","25093"
 "25216",\
 "25219",\
 "25907",\
-"25223"]))]
+"25223"]
+
+def pop_density_binning(return_colors=False):
+	"""Return bins and color scheme for population density"""
+	bins = np.array([0, 1, 2, 4, 6, 8, 10, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 5000, 10000])
+	cmap = plt.cm.get_cmap("Reds", len(bins)+1)
+	if not return_colors:
+		return bins, cmap
+	else:
+		colors = []
+		for i in range(cmap.N):
+			rgb = cmap(i)[:3] 
+			colors.append(matplotlib.colors.rgb2hex(rgb))
+
+		return bins, colors
+
+def risk_binning(return_colors=False):
+	"""Return bins and color scheme for relative median risk"""
+	bins = np.arange(-10000,18000,2000)
+	cmap = plt.cm.get_cmap("RdBu", len(bins))
+	if not return_colors:
+		return bins, cmap
+	else:
+		colors = []
+		for i in range(cmap.N):
+			rgb = cmap(i)[:3] 
+			colors.append(matplotlib.colors.rgb2hex(rgb))
+
+		return bins, colors
+		
+url="/Volumes/Disco Externo/municipios_ign.geojson"
+keep_columns = ["nameunit", "codigoine", "geometry"]
+df=gpd.read_file(url)
+
+df=df.loc[(df["codigoine"].isin(municipiosLetMeHelp))]
 
 cols = list(df)
 for col in keep_columns:
@@ -154,10 +173,15 @@ for col in keep_columns:
 data=df.drop(columns=cols)
 
 data.rename(columns={"nameunit": "name","codigoine":"zip"}, inplace=True)
-data.loc[:, "pop2018"] = 100
+
+# Join from population and data
+
+data=data.set_index('zip').join(population.set_index('Codi'))
+
+data["pop2020"] = data["Total. De 0 a 14 anys"]+data["Total. De 15 a 64 anys"]+data["Total. De 65 anys i més"]
 data.loc[:, "area"] = 100
 data.loc[:, "risk"] = 000
-data["pop_density"] = data["pop2018"]/data["area"]
+data["pop_density"] = data["pop2020"]/data["area"]
 avg_risk = np.nanmean(data["risk"])
 data["risk_relative"] = data["risk"]-avg_risk
 
