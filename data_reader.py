@@ -4,7 +4,8 @@ import matplotlib
 from pandas import Series
 import numpy as np
 import os
-from cargador_datos_csv import *
+from cargador_datos_csv_population import *
+from cargador_datos_csv_area import *
 
 municipiosLetMeHelp=["25041",\
 "25068",\
@@ -174,14 +175,17 @@ data=df.drop(columns=cols)
 
 data.rename(columns={"nameunit": "name","codigoine":"zip"}, inplace=True)
 
-# Join from population and data
-
+# Join population and data
 data=data.set_index('zip').join(population.set_index('Codi'))
+# Join area and data
+data=data.join(area.set_index('Codi'))
+data.rename(columns={"(km2)": "area"}, inplace=True)
+
 
 data["pop2020"] = data["Total. De 0 a 14 anys"]+data["Total. De 15 a 64 anys"]+data["Total. De 65 anys i més"]
-data.loc[:, "area"] = 100
-data.loc[:, "risk"] = 000
 data["pop_density"] = data["pop2020"]/data["area"]
+
+data.loc[:, "risk"] = 000
 avg_risk = np.nanmean(data["risk"])
 data["risk_relative"] = data["risk"]-avg_risk
 
