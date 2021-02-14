@@ -409,18 +409,7 @@ function initMap() {
   });
 
   // Zonas inundables
-  var kmlLayer = new google.maps.KmlLayer("zones_potencialment_inundables.kmz", {
-    suppressInfoWindows: true,
-    preserveViewport: false,
-    map: map
-  });
-  kmlLayer.addListener('click', function(event) {
-    var content = event.featureData.infoWindowHtml;
-    var testimonial = document.getElementById('capture');
-    testimonial.innerHTML = content;
-  });
-
-
+ 
   // Center map on Helsinki using geocoding
   var geocoder = new google.maps.Geocoder();
   var address = 'Barcelona';
